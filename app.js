@@ -19,7 +19,7 @@ function getPosters(){
     return names;
 }
 
-function makeSchedule(eventName, dates, posters){
+function makeSchedule(eventName, dates, posters) {
     let schedule = "";
     let dateIndex = 0;
     let dailyPosters = [];
@@ -29,33 +29,43 @@ function makeSchedule(eventName, dates, posters){
 
     shuffleArray(posters);
 
-    for (let i = 0; i < dates.length; i++){
-        dailyPosters.push(""); // Create an empty string for each line of posters
+    // Initialize empty strings for each date
+    for (let i = 0; i < dates.length; i++) {
+        dailyPosters.push(""); 
     }
 
-    while (posters.length != 0){
-        // Only add an "@" if there are names left
-        if (posters[0]) {
-            dailyPosters[dateIndex] += "@" + posters[0]; // Add the name without a comma
-            posters.shift();
+    while (posters.length != 0) {
+        // Only add a poster if there are names left
+        if (posters.length > 0) {
+            // If there are posters, add the current poster with an '@'
+            dailyPosters[dateIndex] += "@" + posters[0]; // Add the name
+            posters.shift(); // Remove the added poster
 
+            // Check if there are more posters left to determine if we need a comma
             if (posters.length > 0) {
                 dailyPosters[dateIndex] += ", "; // Add a comma only if there are more posters left
             }
         }
 
-        if (dateIndex < dates.length - 1){
+        // Increment or reset date index
+        if (dateIndex < dates.length - 1) {
             dateIndex++;
         } else {
             dateIndex = 0;
         }
     }
 
-    // Reverse the order so there are more posters when it's closer to the event
+    // Reverse the order to give more posters closer to the event
     dailyPosters.reverse();
 
-    for (let i = 0; i < dates.length; i++){
-       schedule += dates[i] + ": " + dailyPosters[i] + "\n"; // No need to slice off the trailing comma
+    // Build the schedule output
+    for (let i = 0; i < dates.length; i++) {
+        // Only add the line if there are posters for that date
+        if (dailyPosters[i].trim() !== "") {
+            schedule += dates[i] + ": " + dailyPosters[i] + "\n"; // Only add lines that have content
+        } else {
+            schedule += dates[i] + ": No posters assigned\n"; // Optional: show no posters if empty
+        }
     }
 
     return schedule;
