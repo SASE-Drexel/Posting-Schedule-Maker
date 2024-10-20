@@ -15,7 +15,7 @@ function getDates(){
 
 function getPosters(){
     let names = document.getElementById("namesInput").value.trim();
-    names = names.split(" ");
+    names = names.split(",").map(name => name.trim()); //split the names by comma
     return names;
 }
 
