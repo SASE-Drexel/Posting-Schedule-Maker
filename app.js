@@ -27,33 +27,33 @@ function makeSchedule(eventName, dates, posters){
     schedule += "Event Title: " + eventName + "\n" +
         "Schedule: \n";
 
-    shuffleArray(posters)
+    shuffleArray(posters);
 
     for (let i = 0; i < dates.length; i++){
-        // crate an emty string for each line of posters
-        dailyPosters.push("");
+        dailyPosters.push(""); // Create an empty string for each line of posters
     }
+
     while (posters.length != 0){
-        // add posters to each line ( creating schedule by adding a poster to each day at a time)
-        dailyPosters[dateIndex] += "@" + posters[0] + " ";
-        posters.shift()
+        // Add posters to each line (creating schedule by adding a poster to each day at a time)
+        dailyPosters[dateIndex] += "@" + posters[0] + ", "; // Use a comma separator
+        posters.shift();
 
         if (dateIndex < dates.length - 1){
-            dateIndex++
+            dateIndex++;
         }
         else{
-            dateIndex = 0
+            dateIndex = 0;
         }
     }
 
-    // reverse the order so there's more posters when it's closer to the event
-    dailyPosters.reverse()
+    // Reverse the order so there are more posters when it's closer to the event
+    dailyPosters.reverse();
 
     for (let i = 0; i < dates.length; i++){
-       schedule += dates[i] + ": " + dailyPosters[i] + "\n";
+       schedule += dates[i] + ": " + dailyPosters[i].slice(0, -2) + "\n"; // Remove trailing comma and space
     }
 
-    return schedule
+    return schedule;
 }
 
 function scheduleToSlackCommands(schedule, eventName){
@@ -61,22 +61,22 @@ function scheduleToSlackCommands(schedule, eventName){
     let dailySchedule = schedule.split("\n");
     let text = "";
 
-    // remove the 2 first lines (event name and "Schedule:")
-    dailySchedule.shift()
-    dailySchedule.shift()
-    dailySchedule.pop()
+    // Remove the first two lines (event name and "Schedule:") and the last empty line
+    dailySchedule.shift();
+    dailySchedule.shift();
+    dailySchedule.pop();
 
     for (let i = 0; i < dailySchedule.length; i++){
-        dailySchedule[i] = dailySchedule[i].split(":"); // create a list where index 0 is the date and index 1 is the names
-        let names = dailySchedule[i][1].trim() // divide names inside the list
-        names = names.split(" ")
-        dailySchedule[i][1] = names
+        dailySchedule[i] = dailySchedule[i].split(":"); // Create a list where index 0 is the date and index 1 is the names
+        let names = dailySchedule[i][1].trim(); // Trim the list of names
+        dailySchedule[i][1] = names.split(",").map(name => name.trim()); // Split by commas and trim the names
 
-        // create a command for each date
-        text += `/remind @channel \" ${names.map((name => ' ' + name + ' '))}Please make a post about ${eventName} today. 11am-2pm are recommended.\" at ${remindTime} ${dailySchedule[i][0]} \n`
+        // Create a command for each date
+        text += `/remind @channel \" ${dailySchedule[i][1].map((name => ' ' + name + ' '))}Please make a post about ${eventName} today. 11am-2pm are recommended.\" at ${remindTime} ${dailySchedule[i][0]} \n`;
     }
     return text;
 }
+
 
 function displayOutput(){
     let eventName = getEventName();
