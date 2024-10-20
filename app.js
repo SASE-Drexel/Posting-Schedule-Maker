@@ -13,13 +13,11 @@ function getDates(){
     return dates;
 }
 
-function getPosters() {
+function getPosters(){
     let names = document.getElementById("namesInput").value.trim();
-    // Split the names by comma, trim each name, and filter out any empty strings
-    names = names.split(",").map(name => name.trim()).filter(name => name !== ""); 
+    names = names.split(",").map(name => name.trim()); //split the names by comma
     return names;
 }
-
 
 function makeSchedule(eventName, dates, posters) {
     let schedule = "";
