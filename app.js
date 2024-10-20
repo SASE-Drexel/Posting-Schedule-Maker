@@ -62,7 +62,7 @@ function makeSchedule(eventName, dates, posters) {
     for (let i = 0; i < dates.length; i++) {
         // Only add the line if there are posters for that date
         if (dailyPosters[i].trim() !== "") {
-            schedule += dates[i] + ": " + dailyPosters[i] + "\n"; // Only add lines that have content
+            schedule += dates[i] + ": " + dailyPosters[i].trim() + "\n"; // Only add lines that have content
         } else {
             schedule += dates[i] + ": No posters assigned\n"; // Optional: show no posters if empty
         }
@@ -70,7 +70,6 @@ function makeSchedule(eventName, dates, posters) {
 
     return schedule;
 }
-
 
 function scheduleToSlackCommands(schedule, eventName){
     let remindTime = "10am";
@@ -85,10 +84,14 @@ function scheduleToSlackCommands(schedule, eventName){
     for (let i = 0; i < dailySchedule.length; i++){
         dailySchedule[i] = dailySchedule[i].split(":"); // Create a list where index 0 is the date and index 1 is the names
         let names = dailySchedule[i][1].trim(); // Trim the list of names
-        dailySchedule[i][1] = names.split(",").map(name => name.trim()); // Split by commas and trim the names
 
-        // Create a command for each date
-        text += `/remind @channel \" ${dailySchedule[i][1].map((name => ' ' + name + ' '))}Please make a post about ${eventName} today. 11am-2pm are recommended.\" at ${remindTime} ${dailySchedule[i][0]} \n`;
+        // Split by commas and trim the names
+        let trimmedNames = names.split(",").map(name => name.trim()).filter(name => name !== "");
+
+        // Create a command for each date only if there are names
+        if (trimmedNames.length > 0) {
+            text += `/remind @channel "${trimmedNames.map(name => ' ' + name).join('')}. Please make a post about ${eventName} today. 11am-2pm are recommended." at ${remindTime} ${dailySchedule[i][0]} \n`;
+        }
     }
     return text;
 }
