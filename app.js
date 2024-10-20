@@ -21,33 +21,26 @@ function getPosters(){
 
 function makeSchedule(eventName, dates, posters) {
     let schedule = "";
-    let dailyPosters = [];
+    let dailyPosters = Array(dates.length).fill(""); // Initialize empty strings for each date
 
     schedule += "Event Title: " + eventName + "\n" +
         "Schedule: \n";
 
     shuffleArray(posters);
 
-    // Initialize empty strings for each date
-    for (let i = 0; i < dates.length; i++) {
-        dailyPosters.push(""); 
-    }
+    let dateIndex = 0;
 
-    // Create an index for the posters
-    let posterIndex = 0;
-
-    while (posterIndex < posters.length) {
-        // Only add a poster if there are names left
-        if (dailyPosters[Math.floor(posterIndex / dates.length)]) {
-            // Get the current date index
-            let dateIndex = posterIndex % dates.length;
-            // Add the current poster with an '@'
-            if (dailyPosters[dateIndex] !== "") {
-                dailyPosters[dateIndex] += ", "; // Add a comma only if there are names already
-            }
-            dailyPosters[dateIndex] += "@" + posters[posterIndex]; // Add the name
+    // While there are posters left to assign
+    while (posters.length > 0) {
+        // Add the current poster to the daily posters for the current date
+        if (dailyPosters[dateIndex] !== "") {
+            dailyPosters[dateIndex] += ", "; // Add a comma only if there are already names
         }
-        posterIndex++;
+        dailyPosters[dateIndex] += "@" + posters[0]; // Add the name
+        posters.shift(); // Remove the added poster
+
+        // Increment the date index and wrap around if necessary
+        dateIndex = (dateIndex + 1) % dates.length;
     }
 
     // Reverse the order to give more posters closer to the event
