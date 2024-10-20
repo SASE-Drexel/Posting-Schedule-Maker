@@ -34,14 +34,19 @@ function makeSchedule(eventName, dates, posters){
     }
 
     while (posters.length != 0){
-        // Add posters to each line (creating schedule by adding a poster to each day at a time)
-        dailyPosters[dateIndex] += "@" + posters[0] + ", "; // Use a comma separator
-        posters.shift();
+        // Only add an "@" if there are names left
+        if (posters[0]) {
+            dailyPosters[dateIndex] += "@" + posters[0]; // Add the name without a comma
+            posters.shift();
+
+            if (posters.length > 0) {
+                dailyPosters[dateIndex] += ", "; // Add a comma only if there are more posters left
+            }
+        }
 
         if (dateIndex < dates.length - 1){
             dateIndex++;
-        }
-        else{
+        } else {
             dateIndex = 0;
         }
     }
@@ -50,11 +55,12 @@ function makeSchedule(eventName, dates, posters){
     dailyPosters.reverse();
 
     for (let i = 0; i < dates.length; i++){
-       schedule += dates[i] + ": " + dailyPosters[i].slice(0, -2) + "\n"; // Remove trailing comma and space
+       schedule += dates[i] + ": " + dailyPosters[i] + "\n"; // No need to slice off the trailing comma
     }
 
     return schedule;
 }
+
 
 function scheduleToSlackCommands(schedule, eventName){
     let remindTime = "10am";
