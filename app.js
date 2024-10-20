@@ -32,11 +32,15 @@ function makeSchedule(eventName, dates, posters) {
 
     // While there are posters left to assign
     while (posters.length > 0) {
-        // Add the current poster to the daily posters for the current date
+        // Prepare the current poster name
+        let currentPoster = "@" + posters[0]; // Add the '@' sign to the poster name
+
+        // If there's already a name in dailyPosters[dateIndex], add a comma
         if (dailyPosters[dateIndex] !== "") {
-            dailyPosters[dateIndex] += ", "; // Add a comma only if there are already names
+            dailyPosters[dateIndex] += ", "; // Add a comma if there's already a name
         }
-        dailyPosters[dateIndex] += "@" + posters[0]; // Add the name
+
+        dailyPosters[dateIndex] += currentPoster; // Add the current poster name
         posters.shift(); // Remove the added poster
 
         // Increment the date index and wrap around if necessary
@@ -48,8 +52,9 @@ function makeSchedule(eventName, dates, posters) {
 
     // Build the schedule output
     for (let i = 0; i < dates.length; i++) {
+        // Check if there's content in dailyPosters[i] before adding to the schedule
         if (dailyPosters[i].trim() !== "") {
-            schedule += dates[i] + ": " + dailyPosters[i].trim() + "\n"; // Only add lines that have content
+            schedule += dates[i] + ": " + dailyPosters[i].trim() + "\n"; // Add the line with content
         } else {
             schedule += dates[i] + ": No posters assigned\n"; // Optional: show no posters if empty
         }
@@ -57,6 +62,7 @@ function makeSchedule(eventName, dates, posters) {
 
     return schedule;
 }
+
 
 
 function scheduleToSlackCommands(schedule, eventName){
