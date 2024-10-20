@@ -21,7 +21,6 @@ function getPosters(){
 
 function makeSchedule(eventName, dates, posters) {
     let schedule = "";
-    let dateIndex = 0;
     let dailyPosters = [];
 
     schedule += "Event Title: " + eventName + "\n" +
@@ -34,25 +33,21 @@ function makeSchedule(eventName, dates, posters) {
         dailyPosters.push(""); 
     }
 
-    while (posters.length != 0) {
+    // Create an index for the posters
+    let posterIndex = 0;
+
+    while (posterIndex < posters.length) {
         // Only add a poster if there are names left
-        if (posters.length > 0) {
-            // If there are posters, add the current poster with an '@'
-            dailyPosters[dateIndex] += "@" + posters[0]; // Add the name
-            posters.shift(); // Remove the added poster
-
-            // Check if there are more posters left to determine if we need a comma
-            if (posters.length > 0) {
-                dailyPosters[dateIndex] += ", "; // Add a comma only if there are more posters left
+        if (dailyPosters[Math.floor(posterIndex / dates.length)]) {
+            // Get the current date index
+            let dateIndex = posterIndex % dates.length;
+            // Add the current poster with an '@'
+            if (dailyPosters[dateIndex] !== "") {
+                dailyPosters[dateIndex] += ", "; // Add a comma only if there are names already
             }
+            dailyPosters[dateIndex] += "@" + posters[posterIndex]; // Add the name
         }
-
-        // Increment or reset date index
-        if (dateIndex < dates.length - 1) {
-            dateIndex++;
-        } else {
-            dateIndex = 0;
-        }
+        posterIndex++;
     }
 
     // Reverse the order to give more posters closer to the event
@@ -60,7 +55,6 @@ function makeSchedule(eventName, dates, posters) {
 
     // Build the schedule output
     for (let i = 0; i < dates.length; i++) {
-        // Only add the line if there are posters for that date
         if (dailyPosters[i].trim() !== "") {
             schedule += dates[i] + ": " + dailyPosters[i].trim() + "\n"; // Only add lines that have content
         } else {
@@ -70,6 +64,7 @@ function makeSchedule(eventName, dates, posters) {
 
     return schedule;
 }
+
 
 function scheduleToSlackCommands(schedule, eventName){
     let remindTime = "10am";
